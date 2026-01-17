@@ -442,9 +442,87 @@
         </tr>
     </table>`
 ],
-                pressure: ["💨 關於氣壓", "氣壓就像壓縮的彈簧，儲存了能量。氣壓越高，把水擠出去的力量就越大，推力也就越強。"],
-                angle: ["📐 關於角度", "想像你在丟球，如果往正上方丟（90度），球只會飛很高但落回原點；如果貼著地丟（0度），球很快就撞地。通常 45度 是飛得最遠的黃金角度！"],
-                fins: ["🦈 關於尾翼", "尾翼能幫助火箭在飛行時保持平衡，不亂翻滾。流線型的設計（如後掠翼）能減少空氣阻力的干擾。"]
+                pressure: [
+    "💨 關於氣壓：能量的儲存",
+    `<b>科學原理：壓力與能量轉換</b><br>
+    氣壓就像是被壓縮的彈簧。當你打氣進入瓶子時，就是在儲存能量。壓力越大，噴水的速度就越快！<br><br>
+    <table class="w-full text-sm border-collapse border border-green-200 mt-2">
+        <tr class="bg-green-100">
+            <th class="border border-green-200 p-1">氣壓高低</th>
+            <th class="border border-green-200 p-1">對火箭的影響</th>
+            <th class="border border-green-200 p-1">飛行結果</th>
+        </tr>
+        <tr>
+            <td class="border border-green-200 p-1 font-bold text-blue-600">低氣壓</td>
+            <td class="border border-green-200 p-1">能量不足，水噴出的速度非常緩慢。</td>
+            <td class="border border-green-200 p-1 text-orange-600">動力微弱，飛不高 ❌</td>
+        </tr>
+        <tr class="bg-green-50">
+            <td class="border border-green-200 p-1 font-bold text-green-700">高氣壓 (60psi)</td>
+            <td class="border border-green-200 p-1">儲存大量能量，瞬間噴射力極強。</td>
+            <td class="border border-green-200 p-1 text-green-600 font-bold">爆發力強，飛最遠！ ⭐</td>
+        </tr>
+        <tr>
+            <td class="border border-green-200 p-1 font-bold text-red-600">過度氣壓</td>
+            <td class="border border-green-200 p-1">超過瓶子能承受的極限。</td>
+            <td class="border border-green-200 p-1 text-red-600 font-bold">瓶身爆裂，非常危險！ ⚠️</td>
+        </tr>
+    </table>`
+],
+                angle: [
+    "📐 關於發射角度：拋物線與射程",
+    `<b>科學原理：拋物線運動</b><br>
+    發射角度決定了火箭在空中停留的時間與前進的距離。想像你在投籃，太高或太低都投不遠。<br><br>
+    <table class="w-full text-sm border-collapse border border-purple-200 mt-2">
+        <tr class="bg-purple-100">
+            <th class="border border-purple-200 p-1">發射角度</th>
+            <th class="border border-purple-200 p-1">對火箭的影響</th>
+            <th class="border border-purple-200 p-1">飛行結果</th>
+        </tr>
+        <tr>
+            <td class="border border-purple-200 p-1 font-bold">低角度 (0-30°)</td>
+            <td class="border border-purple-200 p-1">火箭太貼近地面，受重力影響很快墜毀。</td>
+            <td class="border border-purple-200 p-1 text-orange-600">很快落地，距離短 ❌</td>
+        </tr>
+        <tr class="bg-green-50">
+            <td class="border border-purple-200 p-1 font-bold text-green-700">黃金角度 (45-55°)</td>
+            <td class="border border-purple-200 p-1">完美平衡高度與前進速度，飛行軌跡最優。</td>
+            <td class="border border-purple-200 p-1 text-green-600 font-bold">飛得最遠！ ⭐</td>
+        </tr>
+        <tr>
+            <td class="border border-purple-200 p-1 font-bold">高角度 (60-90°)</td>
+            <td class="border border-purple-200 p-1">能量都花在往上飛，雖然飛很高但沒在前進。</td>
+            <td class="border border-purple-200 p-1 text-blue-600">飛得很高，但落地近 ❌</td>
+        </tr>
+    </table>`
+],
+                fins: [
+    "🦈 關於尾翼：穩定性與空氣阻力",
+    `<b>科學原理：空氣動力學</b><br>
+    尾翼就像魚的鰭或箭的羽毛，能讓火箭在高速飛行時保持平衡，不亂翻滾。不同的形狀會產生不同的阻力（Drag）。<br><br>
+    <table class="w-full text-sm border-collapse border border-slate-200 mt-2">
+        <tr class="bg-slate-200">
+            <th class="border border-slate-300 p-1">尾翼形狀</th>
+            <th class="border border-slate-300 p-1">空氣阻力</th>
+            <th class="border border-slate-300 p-1">飛行特點</th>
+        </tr>
+        <tr>
+            <td class="border border-slate-200 p-1 font-bold">方形 / 圓形翼</td>
+            <td class="border border-slate-200 p-1 text-orange-600 font-bold">較大</td>
+            <td class="border border-slate-200 p-1">穩定性好，但因為阻力大，會減慢速度。</td>
+        </tr>
+        <tr class="bg-slate-50">
+            <td class="border border-slate-200 p-1 font-bold">三角形 / 梯形翼</td>
+            <td class="border border-slate-200 p-1 text-blue-600 font-bold">中等</td>
+            <td class="border border-slate-200 p-1">最常見的設計，兼顧穩定與速度。</td>
+        </tr>
+        <tr class="bg-green-50">
+            <td class="border border-slate-200 p-1 font-bold text-green-700">魚鰭 / 後掠翼</td>
+            <td class="border border-slate-200 p-1 text-green-600 font-bold">最小 ⭐</td>
+            <td class="border border-slate-200 p-1">模仿超音速飛機，切割空氣能力最強，飛最快！</td>
+        </tr>
+    </table>`
+],
             };
             document.getElementById('modalTitle').innerText = data[key][0];
             document.getElementById('modalContent').innerHTML = `<p>${data[key][1]}</p>`;
