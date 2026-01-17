@@ -387,7 +387,34 @@
 
         function showInfo(key) {
             const data = {
-                water: ["💧 關於水量", "水是火箭的『燃料』。水比空氣重很多，當壓力把水往後噴出時，根據『作用力與反作用力』，火箭就會往前衝！但水太多會太重，水太少則噴一下就沒了。"],
+                water: [
+    "💧 關於水量：作用力與反作用力", 
+    `<b>科學原理：作用力與反作用力</b><br>
+    水是火箭的『燃料』。當水火箭底部的壓力將水向後高速噴出時（作用力），水也會給予火箭一個向前的推動力（反作用力）。<br><br>
+    <b>「推力」與「重量」的拉鋸戰：</b><br>
+    <table class="w-full text-sm border-collapse border border-blue-200 mt-2">
+        <tr class="bg-blue-100">
+            <th class="border border-blue-200 p-1">水量程度</th>
+            <th class="border border-blue-200 p-1">對火箭的影響</th>
+            <th class="border border-blue-200 p-1">飛行結果</th>
+        </tr>
+        <tr>
+            <td class="border border-blue-200 p-1 font-bold">太少水</td>
+            <td class="border border-blue-200 p-1">推力時間太短，能量很快用完。</td>
+            <td class="border border-blue-200 p-1 text-red-500">飛不遠 ❌</td>
+        </tr>
+        <tr class="bg-green-50">
+            <td class="border border-blue-200 p-1 font-bold text-green-700">適中 (1/3)</td>
+            <td class="border border-blue-200 p-1">兼顧推動力與適當重量。</td>
+            <td class="border border-blue-200 p-1 text-green-600 font-bold">飛最遠、最高！ ⭐</td>
+        </tr>
+        <tr>
+            <td class="border border-blue-200 p-1 font-bold">太多水</td>
+            <td class="border border-blue-200 p-1">火箭變太重，且壓縮空氣空間太小。</td>
+            <td class="border border-blue-200 p-1 text-orange-600">起飛沉重 ⚠️</td>
+        </tr>
+    </table>`
+],
                 mass: ["⚖️ 關於重量", "牛頓第二定律告訴我們，越重的物體越難改變運動狀態。機身輕一點，同樣的推力可以讓火箭飛得更快更遠！"],
                 pressure: ["💨 關於氣壓", "氣壓就像壓縮的彈簧，儲存了能量。氣壓越高，把水擠出去的力量就越大，推力也就越強。"],
                 angle: ["📐 關於角度", "想像你在丟球，如果往正上方丟（90度），球只會飛很高但落回原點；如果貼著地丟（0度），球很快就撞地。通常 45度 是飛得最遠的黃金角度！"],
