@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>慈雲山天主教小學水火箭模擬器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; touch-action: manipulation; }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #3B82F6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        #simCanvas { 
+            background: linear-gradient(to bottom, #bae6fd 0%, #f0f9ff 100%); 
+            cursor: crosshair;
+        }
+        .highlight-change { background-color: #fef08a !important; border: 2px solid #eab308; }
+        /* Match heights */
+        .sync-height { height: 620px; }
+        @media (max-width: 1024px) { .sync-height { height: auto; } }
+    </style>
+</head>
+<body class="bg-slate-100 pb-20">
+
+    <header class="bg-blue-600 text-white p-4 shadow-md text-center">
+        <h1 class="text-2xl font-bold decoration-orange-400">🚀 慈雲山天主教小學水火箭實驗室</h1>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <section class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-xl border-t-8 border-blue-500 flex flex-col justify-between sync-height">
+            <h2 class="text-xl font-bold mb-4 flex items-center border-b pb-2">⚙️ 實驗參數設定</h2>
+            
+            <div class="space-y-5 flex-grow overflow-y-auto pr-2">
+                <div class="bg-blue-50 p-3 rounded-xl">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="font-bold text-blue-800">1. 水量 (ml / %)</label>
+                        <button onclick="showInfo('water')" class="bg-blue-500 text-white w-5 h-5 rounded-full text-xs">?</button>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <input type="range" id="waterSlide" min="0" max="500" value="250" class="flex-grow h-2 bg-blue-200 rounded-lg appearance-none slider-thumb">
+                        <input type="number" id="waterInput" value="250" class="w-16 border-2 border-blue-200 rounded text-center font-bold">
+                    </div>
+                    <p class="text-xs text-blue-600 mt-1">目前佔比: <span id="waterPct">50</span>%</p>
+                </div>
+
+                <div class="bg-orange-50 p-3 rounded-xl">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="font-bold text-orange-800">2. 機身重量 (g)</label>
+                        <button onclick="showInfo('mass')" class="bg-orange-500 text-white w-5 h-5 rounded-full text-xs">?</button>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <input type="range" id="massSlide" min="100" max="500" value="200" class="flex-grow h-2 bg-orange-200 rounded-lg appearance-none slider-thumb">
+                        <input type="number" id="massInput" value="200" class="w-16 border-2 border-orange-200 rounded text-center font-bold">
+                    </div>
+                </div>
+
+                <div class="bg-green-50 p-3 rounded-xl">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="font-bold text-green-800">3. 氣壓 (psi)</label>
+                        <button onclick="showInfo('pressure')" class="bg-green-500 text-white w-5 h-5 rounded-full text-xs">?</button>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <input type="range" id="pressureSlide" min="0" max="60" step="5" value="40" class="flex-grow h-2 bg-green-200 rounded-lg appearance-none slider-thumb">
+                        <input type="number" id="pressureInput" value="40" class="w-16 border-2 border-green-200 rounded text-center font-bold">
+                    </div>
+                </div>
+
+                <div class="bg-purple-50 p-3 rounded-xl">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="font-bold text-purple-800">4. 發射角度 (°)</label>
+                        <button onclick="showInfo('angle')" class="bg-purple-500 text-white w-5 h-5 rounded-full text-xs">?</button>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <input type="range" id="angleSlide" min="0" max="90" step="5" value="45" class="flex-grow h-2 bg-purple-200 rounded-lg appearance-none slider-thumb">
+                        <input type="number" id="angleInput" value="45" class="w-16 border-2 border-purple-200 rounded text-center font-bold">
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="font-bold text-slate-800">5. 尾翼形狀</label>
+                        <button onclick="showInfo('fins')" class="bg-slate-500 text-white w-5 h-5 rounded-full text-xs">?</button>
+                    </div>
+                    <select id="finShape" class="w-full p-2 border-2 border-slate-200 rounded-lg font-bold">
+                        <option value="1.0">三角形翼</option>
+                        <option value="1.3">方形翼 (阻力大)</option>
+                        <option value="0.9">梯形翼</option>
+                        <option value="1.1">圓形翼</option>
+                        <option value="0.8">魚鰭翼</option>
+                        <option value="0.7">後掠翼 (最流線)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="launchBtn" class="mt-4 w-full bg-red-500 hover:bg-red-600 active:scale-95 text-white font-black py-4 rounded-2xl text-2xl shadow-lg transition-all border-b-4 border-red-800">
+                🚀 發射預備！
+            </button>
+        </section>
+
+        <section class="lg:col-span-8 flex flex-col gap-4 sync-height">
+            <div class="relative flex-grow bg-white p-2 rounded-2xl shadow-xl overflow-hidden border-4 border-white">
+                <canvas id="simCanvas" class="w-full h-full rounded-xl"></canvas>
+                
+                <div class="absolute top-4 left-4 right-4 flex justify-between">
+                    <div class="flex gap-2">
+                        <div class="bg-white/90 px-4 py-2 rounded-full shadow-sm border border-blue-200 font-bold text-blue-600">
+                            高度: <span id="hudHeight">0.0</span> m
+                        </div>
+                        <div class="bg-white/90 px-4 py-2 rounded-full shadow-sm border border-blue-200 font-bold text-blue-600">
+                            距離: <span id="hudDist">0.0</span> m
+                        </div>
+                    </div>
+                    <div id="statusTag" class="hidden bg-orange-500 text-white px-4 py-2 rounded-full font-bold animate-pulse">
+                        飛行中...
+                    </div>
+                </div>
+            </div>
+
+            <div id="fairTestBox" class="hidden bg-amber-100 border-l-8 border-amber-500 p-4 rounded-xl text-amber-900 shadow-md">
+                <p class="font-black text-lg">💡 小科學家筆記：</p>
+                <p>你一次改動了太多參數！為了公平測試，每次實驗請<b>只改變一個數值</b>，才能找出真正的關鍵因素喔！</p>
+            </div>
+        </section>
+
+        <section class="lg:col-span-12 bg-white p-6 rounded-2xl shadow-xl">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h2 class="text-2xl font-black text-gray-800">📊 飛行紀錄數據表</h2>
+                <div class="flex flex-wrap gap-2">
+                    <!-- <button onclick="copyTableData()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-xl font-bold shadow-md">📋 複製數據</button> -->
+                    <button onclick="exportTableImage()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2 rounded-xl font-bold shadow-md">🖼️ 匯出圖片</button>
+                    <button onclick="clearHistory()" class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-xl font-bold shadow-md">🗑️ 清空所有</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="recordTable" class="w-full text-center border-separate border-spacing-y-2">
+                    <thead>
+                        <tr class="text-gray-500 uppercase text-sm font-bold">
+                            <th class="pb-2">測試次數</th>
+                            <th class="pb-2">水量(ml)</th>
+                            <th class="pb-2">重量(g)</th>
+                            <th class="pb-2">氣壓(psi)</th>
+                            <th class="pb-2">尾翼形狀</th>
+                            <th class="pb-2">角度</th>
+                            <th class="pb-2 text-red-500">總距離(m)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="infoModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-6 z-50 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-3xl max-w-lg w-full shadow-2xl border-t-8 border-blue-500">
+            <h3 id="modalTitle" class="text-2xl font-black mb-4 text-blue-600">原理小學堂</h3>
+            <div id="modalContent" class="text-gray-700 leading-relaxed text-lg mb-8 space-y-2"></div>
+            <button onclick="closeInfo()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-black text-xl transition-transform active:scale-95">了解！繼續實驗</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const tableBody = document.getElementById('tableBody');
+        const launchBtn = document.getElementById('launchBtn');
+        const statusTag = document.getElementById('statusTag');
+        
+        // Match canvas to visual size
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let animationId;
+        let history = JSON.parse(localStorage.getItem('rocketSimHistory_v2')) || [];
+
+        function setupInputSync(slideId, inputId, updateFn) {
+            const slide = document.getElementById(slideId);
+            const input = document.getElementById(inputId);
+            slide.oninput = () => { input.value = slide.value; updateFn(slide.value); };
+            input.onchange = () => {
+                let val = parseInt(input.value);
+                if (val > slide.max) val = slide.max;
+                if (val < slide.min) val = slide.min;
+                input.value = val; slide.value = val; updateFn(val);
+            };
+        }
+
+        setupInputSync('waterSlide', 'waterInput', val => {
+            document.getElementById('waterPct').innerText = Math.round((val/500)*100);
+        });
+        setupInputSync('massSlide', 'massInput', () => {});
+        setupInputSync('pressureSlide', 'pressureInput', () => {});
+        setupInputSync('angleSlide', 'angleInput', () => {});
+
+        function launch() {
+            if (animationId) cancelAnimationFrame(animationId);
+            statusTag.classList.remove('hidden');
+            launchBtn.disabled = true;
+            launchBtn.innerText = "🚀 飛行中...";
+            
+            const water = parseFloat(document.getElementById('waterSlide').value);
+            const dryMass = parseFloat(document.getElementById('massSlide').value);
+            const pressure = parseFloat(document.getElementById('pressureSlide').value);
+            const angleDeg = parseFloat(document.getElementById('angleSlide').value);
+            const dragCoeff = parseFloat(document.getElementById('finShape').value);
+            const finName = document.getElementById('finShape').options[document.getElementById('finShape').selectedIndex].text;
+
+            let state = {
+                x: 0, y: 0.1,
+                vx: Math.cos(angleDeg * Math.PI / 180) * 0.1,
+                vy: Math.sin(angleDeg * Math.PI / 180) * 0.1,
+                waterLeft: water / 1000, 
+                pressureCur: (pressure + 14.7) * 6894.76, 
+                mass: (dryMass + water) / 1000,
+                time: 0,
+                path: []
+            };
+
+            const dt = 0.005; // Smaller time step for high-speed stability
+            const nozzleArea = 0.000314; // Standard soda bottle opening
+            const bottleVol = 0.001; // 1L total
+            const airDensity = 1.225;
+            const gravity = 9.81;
+
+            function runPhysics() {
+                // Sub-stepping loop (Run physics 10 times per frame for high pressure stability)
+                for(let i=0; i<10; i++) {
+                    let thrust = 0;
+                    if (state.waterLeft > 0) {
+                        const vExhaust = Math.sqrt(2 * (state.pressureCur - 101325) / 1000);
+                        const massFlow = 1000 * nozzleArea * vExhaust;
+                        thrust = massFlow * vExhaust;
+                        
+                        const actualExpelled = Math.min(state.waterLeft, massFlow * dt);
+                        state.waterLeft -= actualExpelled;
+                        state.mass -= actualExpelled;
+                        
+                        // Adiabatic expansion: P1V1 = P2V2 (approx)
+                        const airVol = bottleVol - state.waterLeft;
+                        state.pressureCur = state.pressureCur * Math.pow((airVol - nozzleArea * vExhaust * dt)/airVol, 1.4);
+                    } else if (state.pressureCur > 101325) {
+                        // Gas thrust phase (short)
+                        thrust = (state.pressureCur - 101325) * nozzleArea * 0.5;
+                        state.pressureCur *= 0.95;
+                    }
+
+                    const speed = Math.sqrt(state.vx**2 + state.vy**2);
+                    const drag = 0.5 * airDensity * speed**2 * dragCoeff * 0.008;
+
+                    const angle = Math.atan2(state.vy, state.vx);
+                    const ax = (thrust * Math.cos(angle) - drag * Math.cos(angle)) / state.mass;
+                    const ay = (thrust * Math.sin(angle) - state.mass * gravity - drag * Math.sin(angle)) / state.mass;
+
+                    state.vx += ax * dt;
+                    state.vy += ay * dt;
+                    state.x += state.vx * dt;
+                    state.y += state.vy * dt;
+                    state.time += dt;
+
+                    if (state.y <= 0 && state.time > 0.1) {
+                        state.y = 0;
+                        finishLaunch(state, {water, dryMass, pressure, angleDeg, finName});
+                        return;
+                    }
+                }
+
+                state.path.push({x: state.x, y: state.y});
+                draw(state);
+                animationId = requestAnimationFrame(runPhysics);
+            }
+            runPhysics();
+        }
+
+        function draw(state) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const scale = 8; // Zoom level
+            const floorY = canvas.height - 40;
+            const offsetX = state.x * scale > canvas.width * 0.4 ? (state.x * scale - canvas.width * 0.4) : 0;
+
+            // Ground
+            ctx.fillStyle = "#4ade80";
+            ctx.fillRect(0, floorY, canvas.width, 40);
+            
+            // Markers
+            ctx.fillStyle = "white";
+            for(let i=0; i < state.x + 200; i+=5) {
+                const mx = i * scale - offsetX;
+                if (mx >= -50 && mx <= canvas.width + 50) {
+                    ctx.fillRect(mx, floorY, 2, 8);
+                    if(i % 10 === 0) {
+                        ctx.font = "bold 12px Arial";
+                        ctx.fillText(i + 'm', mx - 10, floorY + 22);
+                    }
+                }
+            }
+
+            // Trajectory
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(59, 130, 246, 0.4)";
+            ctx.lineWidth = 3;
+            state.path.forEach((p, i) => {
+                const px = p.x * scale - offsetX;
+                const py = floorY - p.y * scale;
+                if(i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+
+            // Rocket
+            const rx = state.x * scale - offsetX;
+            const ry = floorY - state.y * scale;
+            ctx.save();
+            ctx.translate(rx, ry);
+            ctx.rotate(-Math.atan2(state.vy, state.vx));
+            
+            // Draw Bottle Shape
+            ctx.fillStyle = "#f8fafc";
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(-20, -7, 40, 14, 4); ctx.fill(); ctx.stroke();
+            // Nose Cone
+            ctx.fillStyle = "#ef4444";
+            ctx.beginPath(); ctx.moveTo(20, -7); ctx.lineTo(35, 0); ctx.lineTo(20, 7); ctx.fill();
+            
+            ctx.restore();
+
+            document.getElementById('hudHeight').innerText = Math.max(0, state.y).toFixed(1);
+            document.getElementById('hudDist').innerText = state.x.toFixed(1);
+        }
+
+        function finishLaunch(state, inputs) {
+            cancelAnimationFrame(animationId);
+            statusTag.classList.add('hidden');
+            launchBtn.disabled = false;
+            launchBtn.innerText = "🚀 再次發射！";
+            
+            const distance = state.x.toFixed(2);
+            const lastExp = history[0];
+            let changes = 0;
+            if(lastExp) {
+                if(inputs.water != lastExp.water) changes++;
+                if(inputs.dryMass != lastExp.dryMass) changes++;
+                if(inputs.pressure != lastExp.pressure) changes++;
+                if(inputs.angleDeg != lastExp.angleDeg) changes++;
+                if(inputs.finName != lastExp.finName) changes++;
+            }
+            document.getElementById('fairTestBox').classList.toggle('hidden', changes <= 1 && history.length > 0);
+
+            history.unshift({...inputs, distance, time: new Date().toLocaleTimeString()});
+            localStorage.setItem('rocketSimHistory_v2', JSON.stringify(history));
+            updateTable();
+        }
+
+        function updateTable() {
+            tableBody.innerHTML = '';
+            history.forEach((row, idx) => {
+                const prev = history[idx + 1];
+                const tr = document.createElement('tr');
+                tr.className = "bg-white shadow-sm rounded-lg overflow-hidden";
+                const check = (key) => prev && row[key] !== prev[key] ? 'highlight-change font-black text-blue-600' : '';
+                
+                tr.innerHTML = `
+                    <td class="p-3 text-gray-400 font-bold">#${history.length - idx}</td>
+                    <td class="p-3 ${check('water')}">${row.water}</td>
+                    <td class="p-3 ${check('dryMass')}">${row.dryMass}</td>
+                    <td class="p-3 ${check('pressure')}">${row.pressure}</td>
+                    <td class="p-3 ${check('finName')}">${row.finName}</td>
+                    <td class="p-3 ${check('angleDeg')}">${row.angleDeg}</td>
+                    <td class="p-3 font-black text-red-500 bg-red-50 text-lg">${row.distance}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function showInfo(key) {
+            const data = {
+                water: ["💧 關於水量", "水是火箭的『燃料』。水比空氣重很多，當壓力把水往後噴出時，根據『作用力與反作用力』，火箭就會往前衝！但水太多會太重，水太少則噴一下就沒了。"],
+                mass: ["⚖️ 關於重量", "牛頓第二定律告訴我們，越重的物體越難改變運動狀態。機身輕一點，同樣的推力可以讓火箭飛得更快更遠！"],
+                pressure: ["💨 關於氣壓", "氣壓就像壓縮的彈簧，儲存了能量。氣壓越高，把水擠出去的力量就越大，推力也就越強。"],
+                angle: ["📐 關於角度", "想像你在丟球，如果往正上方丟（90度），球只會飛很高但落回原點；如果貼著地丟（0度），球很快就撞地。通常 45度 是飛得最遠的黃金角度！"],
+                fins: ["🦈 關於尾翼", "尾翼能幫助火箭在飛行時保持平衡，不亂翻滾。流線型的設計（如後掠翼）能減少空氣阻力的干擾。"]
+            };
+            document.getElementById('modalTitle').innerText = data[key][0];
+            document.getElementById('modalContent').innerHTML = `<p>${data[key][1]}</p>`;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        function closeInfo() { document.getElementById('infoModal').classList.add('hidden'); }
+
+        function copyTableData() {
+            let text = "次數,水量,重量,氣壓,尾翼,角度,距離\n";
+            history.forEach((r, i) => text += `${history.length-i},${r.water},${r.dryMass},${r.pressure},${r.finName},${r.angleDeg},${r.distance}\n`);
+            navigator.clipboard.writeText(text).then(() => alert("數據已複製到剪貼簿（CSV格式）"));
+        }
+
+        function exportTableImage() {
+            html2canvas(document.getElementById('recordTable')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '實驗紀錄.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function clearHistory() {
+            if(confirm("確定要刪除所有紀錄嗎？")) { history = []; updateTable(); }
+        }
+
+        launchBtn.onclick = launch;
+        updateTable();
+    </script>
+</body>
+</html>
